@@ -53,27 +53,27 @@ export default function Player() {
 
   const onPlayerStateChange = (event: any) => {
     playerEventRef.current = event;
-    if (event.data === window.YT.PlayerState.PLAYING) {
-      if (t3) clearInterval(t3); // Clear any existing interval before starting a new one
-      t3 = setInterval(() => {
-        const currentTime = event.target.getCurrentTime(); // Use API method
-        console.log('playing')
-        localStorage.setItem(`${videoId}_Player_Time`, currentTime.toString());
-        localStorage.setItem(`${videoId}_Current_Time`, Date.now().toString());
-      }, 2000);
-    }
+    const currentTime = event.target.getCurrentTime();
+    localStorage.setItem(`${videoId}_Player_Time`, currentTime.toString());
+    console.log(
+      event.data === window.YT.PlayerState.PLAYING ? Date.now().toString() : ""
+    );
+    localStorage.setItem(
+      `${videoId}_Current_Time`,
+      event.data === window.YT.PlayerState.PLAYING ? Date.now().toString() : ""
+    );
   };
 
   const loadYouTubeAPI = () => {
     if (window.YT && window.YT.Player) {
-      createPlayer();
-    } else {
-      window.onYouTubeIframeAPIReady = createPlayer;
-      const script = document.createElement("script");
-      script.src = "https://www.youtube.com/iframe_api";
-      script.async = true;
-      document.body.appendChild(script);
+      window.YT = undefined;
+      window.onYouTubeIframeAPIReady = null;
     }
+    window.onYouTubeIframeAPIReady = createPlayer;
+    const script = document.createElement("script");
+    script.src = "https://www.youtube.com/iframe_api";
+    script.async = true;
+    document.body.appendChild(script);
   };
 
   useEffect(() => {
@@ -99,14 +99,6 @@ export default function Player() {
       clearTimeout(t1);
       clearInterval(t2);
       clearInterval(t3);
-      try {
-        if (playerEventRef.current.data === window.YT.PlayerState.PAUSED) {
-          console.log('CLEARED')
-          localStorage.setItem(`${videoId}_Current_Time`, "");
-        }
-      } catch (error) {
-        console.log(error);
-      }
     };
   }, []);
 

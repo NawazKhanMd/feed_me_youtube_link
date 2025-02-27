@@ -34,7 +34,7 @@ export default function Home() {
       <input
         type="text"
         value={link}
-        placeholder="Paste link here"
+        placeholder="Paste Youtube link here"
         onChange={(e) => {
           setLink(e.target.value);
           showError(false);
