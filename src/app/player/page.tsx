@@ -102,21 +102,9 @@ export default function Player() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => {
-  //     alert("Cleanup before page reload");
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, []);
-
   return (
     <ParentLayout backTitle={"Change link"}>
-      <div id="youtube-player" className="w-[800px] h-[450px] z-1"></div>
+      <div id="youtube-player" data-testid="youtube-player" className="w-[800px] h-[450px] z-1"></div>
       {isGifVisible && (
         <img
           onClick={() => router.push(`/gifPage`)}
