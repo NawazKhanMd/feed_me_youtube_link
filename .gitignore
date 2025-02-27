@@ -1,0 +1,30 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vscode/
+.idea/
+
+# Next.js build and cache
+.next/
+out/
+.vercel/
+dist/
+
+
+# Logs
+logs/
+*.log
+yarn.lock
+pnpm-lock.yaml
+package-lock.json
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+.cache/
+coverage/
