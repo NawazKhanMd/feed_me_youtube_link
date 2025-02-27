@@ -9,7 +9,7 @@ export default function Player() {
   const searchParams = useSearchParams();
   const videoId = searchParams.get("video");
   const playerRef = useRef<any>(null);
-  const [playerReady, setPlayerReady] = useState(false);
+  const playerEventRef = useRef<any>(null);
   const [isGifVisible, setIsGifVisible] = useState(false);
   const [gifCorner, setGifCorner] = useState("bottom-right");
   let t3: any;
@@ -31,26 +31,33 @@ export default function Player() {
     console.log(
       `Player stopped at ${savedPlayerPrevTime} seconds and time was ${savedPastTime}`
     );
-    if (!!savedPlayerPrevTime && !!savedPastTime) {
-      const secondsPassedsinceLastStop =
-        (Date.now() - Number(savedPastTime)) / 1000;
+    if (!!savedPlayerPrevTime) {
+      console.log(savedPastTime);
+      const secondsPassedsinceLastStop = !!savedPastTime
+        ? (Date.now() - Number(savedPastTime)) / 1000
+        : 0;
       console.log(
         `Time passed since last stopped ${secondsPassedsinceLastStop}`
       );
       const newSeekSeconds =
         secondsPassedsinceLastStop + Number(savedPlayerPrevTime);
       console.log(`Seeking to ${newSeekSeconds}`);
-      // event.target.seekTo(newSeekSeconds, true);
-      event.target.seekTo(0, true);
+      event.target.seekTo(newSeekSeconds, true);
+      setTimeout(() => {
+        event.target.playVideo();
+      }, 1000);
     } else {
       event.target.seekTo(0, true);
     }
   };
 
   const onPlayerStateChange = (event: any) => {
+    playerEventRef.current = event;
     if (event.data === window.YT.PlayerState.PLAYING) {
+      if (t3) clearInterval(t3); // Clear any existing interval before starting a new one
       t3 = setInterval(() => {
-        const currentTime = event.target.playerInfo.currentTime;
+        const currentTime = event.target.getCurrentTime(); // Use API method
+        console.log('playing')
         localStorage.setItem(`${videoId}_Player_Time`, currentTime.toString());
         localStorage.setItem(`${videoId}_Current_Time`, Date.now().toString());
       }, 2000);
@@ -89,12 +96,31 @@ export default function Player() {
     };
     showGif();
     return () => {
-      alert('cleared')
       clearTimeout(t1);
       clearInterval(t2);
       clearInterval(t3);
+      try {
+        if (playerEventRef.current.data === window.YT.PlayerState.PAUSED) {
+          console.log('CLEARED')
+          localStorage.setItem(`${videoId}_Current_Time`, "");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
   }, []);
+
+  // useEffect(() => {
+  //   const handleBeforeUnload = () => {
+  //     alert("Cleanup before page reload");
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
 
   return (
     <ParentLayout backTitle={"Change link"}>
