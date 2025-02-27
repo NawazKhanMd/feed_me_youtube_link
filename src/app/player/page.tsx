@@ -2,9 +2,9 @@
 
 import ParentLayout from "@/components/parentLayout";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
-export default function Player() {
+const PlayerComponent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const videoId = searchParams.get("video");
@@ -15,14 +15,18 @@ export default function Player() {
   let t3: any;
 
   const createPlayer = () => {
-    playerRef.current = new window.YT.Player("youtube-player", {
-      videoId,
-      playerVars: { autoplay: 1, controls: 1 },
-      events: {
-        onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange,
-      },
-    });
+    try {
+      playerRef.current = new window.YT.Player("youtube-player", {
+        videoId,
+        playerVars: { autoplay: 1, controls: 1 },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+        },
+      });
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const onPlayerReady = (event: any) => {
@@ -121,3 +125,11 @@ export default function Player() {
     </ParentLayout>
   );
 }
+
+const Player = () => (
+  <Suspense fallback={<div>wait, am having tea!</div>}>
+    <PlayerComponent />
+  </Suspense>
+);
+
+export default Player;

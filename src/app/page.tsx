@@ -52,7 +52,7 @@ export default function Home() {
       ) : (
         <button
           onClick={handleSubmit}
-          className={`text-xs transition-opacity duration-300 ${
+          className={`text-xs transition-opacity duration-300 px-4 py-2 ${
             link ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
